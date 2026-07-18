@@ -17,7 +17,8 @@ vllm-down \
 vllm-restart \
 vllm-logs \
 vllm-ps \
-vllm-pull
+vllm-pull \
+vllm-health
 
 
 help:
@@ -44,6 +45,7 @@ help:
 	@echo "  make vllm-logs        Follow logs"
 	@echo "  make vllm-ps          Show container status"
 	@echo "  make vllm-pull        Pull latest image"
+	@echo "  make vllm-health      Check vLLM health status"
 	@echo ""
 
 
@@ -79,3 +81,6 @@ vllm-ps:
 
 vllm-pull:
 	docker compose -f $(VLLM_COMPOSE) pull
+
+vllm-health:
+	./scripts/vllm-health.sh
