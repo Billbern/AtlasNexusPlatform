@@ -36,15 +36,15 @@ echo "=========================================================="
 echo
 
 ###############################################################################
-# Docker
+# Docker CLI
 ###############################################################################
 
-info "Checking Docker..."
+info "Checking Docker CLI..."
 
 if command -v docker >/dev/null 2>&1; then
     pass "$(docker --version)"
 else
-    fail "Docker is not installed."
+    fail "Docker CLI not installed."
 fi
 
 ###############################################################################
@@ -56,7 +56,7 @@ info "Checking Docker daemon..."
 if docker info >/dev/null 2>&1; then
     pass "Docker daemon is running."
 else
-    fail "Docker daemon is not running or is not accessible."
+    fail "Docker daemon is not running."
 fi
 
 ###############################################################################
@@ -68,60 +68,137 @@ info "Checking Docker Compose..."
 if docker compose version >/dev/null 2>&1; then
     pass "$(docker compose version)"
 else
-    fail "Docker Compose plugin is missing."
+    fail "Docker Compose plugin missing."
 fi
 
 ###############################################################################
-# NVIDIA GPU
+# NVIDIA Driver
 ###############################################################################
 
-info "Checking NVIDIA GPU..."
+info "Checking NVIDIA driver..."
 
 if command -v nvidia-smi >/dev/null 2>&1; then
-    GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader | head -1)
-    pass "GPU detected: ${GPU_NAME}"
+
+    if GPU=$(nvidia-smi \
+        --query-gpu=name \
+        --format=csv,noheader \
+        2>/dev/null | head -1); then
+
+        pass "GPU detected: ${GPU}"
+
+    else
+
+        fail "nvidia-smi exists but driver is broken."
+
+    fi
+
 else
-    warn "nvidia-smi not found. GPU acceleration may be unavailable."
+
+    fail "nvidia-smi not installed."
+
 fi
 
 ###############################################################################
-# NVIDIA Container Toolkit
+# NVIDIA Container Runtime
+###############################################################################
+
+info "Checking NVIDIA Container Runtime..."
+
+if command -v nvidia-container-runtime >/dev/null 2>&1; then
+    pass "nvidia-container-runtime installed."
+else
+    fail "nvidia-container-runtime missing."
+fi
+
+###############################################################################
+# NVIDIA CTK
 ###############################################################################
 
 info "Checking NVIDIA Container Toolkit..."
 
-if docker info 2>/dev/null | grep -qi nvidia; then
-    pass "NVIDIA container runtime detected."
+if command -v nvidia-ctk >/dev/null 2>&1; then
+    pass "$(nvidia-ctk --version)"
 else
-    warn "NVIDIA container runtime not detected."
+    fail "nvidia-ctk missing."
 fi
 
 ###############################################################################
-# Disk Space
+# Docker Runtime Registration
+###############################################################################
+
+info "Checking Docker runtime registration..."
+
+if docker info | grep -q " nvidia"; then
+    pass "Docker NVIDIA runtime registered."
+else
+    fail "Docker NVIDIA runtime not registered."
+fi
+
+###############################################################################
+# Docker Daemon Configuration
+###############################################################################
+
+info "Checking Docker daemon configuration..."
+
+if [ -f /etc/docker/daemon.json ]; then
+    pass "/etc/docker/daemon.json found."
+else
+    fail "Docker daemon.json missing."
+fi
+
+###############################################################################
+# GPU Containers
+###############################################################################
+
+info "Checking Docker GPU access..."
+
+if docker run --rm --gpus all \
+    nvidia/cuda:12.4.1-base-ubuntu22.04 \
+    nvidia-smi >/dev/null 2>&1
+then
+    pass "Docker GPU support working."
+else
+    fail "Docker cannot launch GPU containers."
+fi
+
+###############################################################################
+# Disk
 ###############################################################################
 
 info "Checking disk space..."
 
-AVAILABLE=$(df -BG . | awk 'NR==2 {gsub("G","",$4); print $4}')
+AVAILABLE=$(df -BG / | awk 'NR==2{gsub("G","",$4);print $4}')
 
 if [ "$AVAILABLE" -ge 50 ]; then
-    pass "${AVAILABLE} GB available."
+    pass "${AVAILABLE} GB free."
 else
-    warn "Only ${AVAILABLE} GB available."
+    warn "${AVAILABLE} GB free."
 fi
 
 ###############################################################################
-# Memory
+# RAM
 ###############################################################################
 
-info "Checking system memory..."
+info "Checking RAM..."
 
-MEMORY=$(free -g | awk '/^Mem:/ {print $2}')
+MEM=$(free -g | awk '/^Mem:/{print $2}')
 
-if [ "$MEMORY" -ge 16 ]; then
-    pass "${MEMORY} GB RAM detected."
+if [ "$MEM" -ge 16 ]; then
+    pass "${MEM} GB RAM."
 else
-    warn "Only ${MEMORY} GB RAM detected."
+    warn "${MEM} GB RAM."
+fi
+
+###############################################################################
+# Internet
+###############################################################################
+
+info "Checking Internet..."
+
+if curl -fsSL https://huggingface.co >/dev/null; then
+    pass "Internet connectivity OK."
+else
+    warn "Unable to reach Hugging Face."
 fi
 
 ###############################################################################
@@ -133,13 +210,13 @@ echo "=========================================================="
 echo "                 Host Check Summary"
 echo "=========================================================="
 
-echo -e "${GREEN}Passed:${NC} ${PASS}"
-echo -e "${RED}Failed:${NC} ${FAIL}"
+echo "Passed : ${PASS}"
+echo "Failed : ${FAIL}"
 
 echo
 
-if [ "${FAIL}" -gt 0 ]; then
-    echo -e "${RED}Host readiness check failed.${NC}"
+if [ "$FAIL" -gt 0 ]; then
+    echo -e "${RED}Host is NOT ready.${NC}"
     exit 1
 fi
 
