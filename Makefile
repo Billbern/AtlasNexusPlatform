@@ -8,6 +8,7 @@ VLLM_COMPOSE := compose/vllm/compose.yaml
 
 .PHONY: \
 help \
+bootstrap \
 host-install \
 host-check \
 host-update \
@@ -18,7 +19,10 @@ vllm-restart \
 vllm-logs \
 vllm-ps \
 vllm-pull \
-vllm-health
+vllm-health \
+access-install \
+access-up \
+access-down
 
 
 help:
@@ -46,6 +50,16 @@ help:
 	@echo "  make vllm-ps          Show container status"
 	@echo "  make vllm-pull        Pull latest image"
 	@echo "  make vllm-health      Check vLLM health status"
+	@echo ""
+	@echo "Bootstrap"
+	@echo "------------------------------------------------------"
+	@echo "  make bootstrap        Run full provisioning pipeline"
+	@echo ""
+	@echo "Access"
+	@echo "------------------------------------------------------"
+	@echo "  sudo make access-install  Install cloudflared"
+	@echo "  make access-up            Start Cloudflare tunnel"
+	@echo "  make access-down          Stop Cloudflare tunnel"
 	@echo ""
 
 
@@ -84,3 +98,16 @@ vllm-pull:
 
 vllm-health:
 	./scripts/vllm-health.sh
+
+
+bootstrap:
+	./scripts/bootstrap.sh
+
+access-install:
+	sudo ./scripts/access-install.sh
+
+access-up:
+	./scripts/access-up.sh
+
+access-down:
+	./scripts/access-down.sh

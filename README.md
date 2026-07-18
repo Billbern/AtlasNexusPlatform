@@ -23,10 +23,11 @@ Atlas Nexus provisions and manages a production-ready vLLM inference server on U
 │  │    Runtime   │   │  Port 8000 → OpenAI API  │    │
 │  └──────────────┘   └──────────────────────────┘    │
 │                                                      │
-│  ┌──────────────────────────────────────────────┐   │
-│  │              Storage                          │   │
-│  │  ./storage/models/  ← model weights          │   │
-│  └──────────────────────────────────────────────┘   │
+│  ┌──────────────────────┐  ┌─────────────────────┐  │
+│  │   Cloudflare Tunnel  │  │      Storage         │  │
+│  │   (cloudflared)      │  │  ./storage/models/   │  │
+│  │   trycloudflare.com  │  │  ← model weights     │  │
+│  └──────────────────────┘  └─────────────────────┘  │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -46,6 +47,16 @@ Atlas Nexus provisions and manages a production-ready vLLM inference server on U
 ---
 
 ## Quick Start
+
+### One-command setup
+
+```bash
+make bootstrap
+```
+
+This runs the full pipeline: host install → host check → storage init → vLLM start → health check → Cloudflare tunnel.
+
+### Step-by-step
 
 ```bash
 # 1. Install host dependencies (Docker, NVIDIA Toolkit, etc.)
@@ -98,6 +109,39 @@ http://<host-ip>:8000/v1
 | `make vllm-logs` | Follow vLLM container logs |
 | `make vllm-ps` | Show vLLM container status |
 | `make vllm-pull` | Pull the latest vLLM image |
+
+### Bootstrap
+
+| Command | Description |
+|---------|-------------|
+| `make bootstrap` | Run full provisioning pipeline (host → storage → vLLM → tunnel) |
+| `make bootstrap --host --storage` | Run only host install and storage init |
+| `make bootstrap --vllm --access` | Start vLLM and tunnel only |
+| `make bootstrap --skip-check` | Skip host readiness check |
+
+The bootstrap script is idempotent — it skips steps that are already complete. Use `--help` to see all options:
+
+```bash
+./scripts/bootstrap.sh --help
+```
+
+### Access (Cloudflare Tunnel)
+
+| Command | Description |
+|---------|-------------|
+| `sudo make access-install` | Install cloudflared binary |
+| `make access-up` | Start a Cloudflare Quick Tunnel to expose vLLM publicly |
+| `make access-down` | Stop the Cloudflare tunnel |
+
+The tunnel creates a temporary public URL (`https://*.trycloudflare.com`) that forwards to your local vLLM instance. This is useful for:
+
+- Testing from external clients without exposing your IP
+- Sharing access to the API temporarily
+- Webhook integrations that need a public endpoint
+
+After running `make access-up`, the public URL is printed to the console and saved to `runtime/cloudflared.url`.
+
+> **Note:** Quick Tunnels are ephemeral. For a permanent tunnel, configure a named tunnel via `cloudflared tunnel create`.
 
 ---
 
@@ -167,6 +211,23 @@ curl http://localhost:8000/v1/chat/completions \
     ]
   }'
 ```
+
+---
+
+## Access Configuration
+
+Access settings are in `configs/access.env`:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `ACCESS_PROVIDER` | `cloudflare` | Tunnel provider |
+| `ACCESS_MODE` | `quick` | Tunnel mode (`quick` or `production`) |
+| `TARGET_HOST` | `localhost` | Local service host to expose |
+| `TARGET_PORT` | `8000` | Local service port to expose |
+| `CLOUDFLARED_BIN` | `cloudflared` | Cloudflared binary path |
+| `PID_FILE` | `runtime/cloudflared.pid` | Process ID file |
+| `LOG_FILE` | `runtime/cloudflared.log` | Tunnel log file |
+| `URL_FILE` | `runtime/cloudflared.url` | Public URL file |
 
 ---
 
