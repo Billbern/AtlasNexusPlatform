@@ -1,0 +1,43 @@
+name: atlas-nexus-vllm
+
+services:
+  vllm:
+
+    image: ${IMAGE}
+
+    container_name: ${CONTAINER_NAME}
+
+    restart: unless-stopped
+
+    ports:
+      - "${PORT}:8000"
+
+    env_file:
+      - .env
+
+    volumes:
+      - ../../storage/models:/models
+
+    ipc: host
+
+    shm_size: 8g
+
+    environment:
+      HUGGING_FACE_HUB_TOKEN: ${HF_TOKEN}
+
+    command:
+      - --model
+      - ${MODEL}
+      - --host
+      - ${HOST}
+      - --port
+      - "8000"
+      - --dtype
+      - ${DTYPE}
+      - --gpu-memory-utilization
+      - ${GPU_MEMORY_UTILIZATION}
+      - --max-model-len
+      - ${MAX_MODEL_LEN}
+      - --trust-remote-code
+
+    runtime: nvidia
