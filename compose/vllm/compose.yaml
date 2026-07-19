@@ -11,10 +11,11 @@ services:
     ports:
       - "${PORT}:8000"
     env_file:
-      - ../../configs/vllm.env
+      - .env
 
     volumes:
       - ../../storage/models:/models
+      - ../../configs/vllm.env:/vllm.env
 
     ipc: host
 
