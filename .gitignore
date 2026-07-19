@@ -1,5 +1,6 @@
 # Local configuration (contains secrets)
 .env
+*.env
 compose/vllm/.env
 
 # Runtime files (PIDs, URLs, logs)

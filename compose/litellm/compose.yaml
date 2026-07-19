@@ -1,0 +1,34 @@
+name: atlas-nexus-litellm
+
+services:
+  litellm:
+    image: litellm/litellm:main
+    container_name: ${CONTAINER_NAME}
+    restart: unless-stopped
+
+    ports:
+      - "${PORT}:4000"
+
+    env_file:
+      - .env
+
+    volumes:
+      - ../../storage/litellm:/storage
+      - ../../configs/litellm.env:/litellm.env
+
+    environment:
+      LITELLM_MODEL: ${LITELLM_MODEL}
+      LITELLM_VLLM_BASE_URL: ${LITELLM_VLLM_BASE_URL}
+      LITELLM_LOG_LEVEL: ${LITELLM_LOG_LEVEL}
+
+    command:
+      - --model
+      - ${LITELLM_MODEL}
+      - --host
+      - ${HOST}
+      - --port
+      - "4000"
+      - --log-level
+      - ${LITELLM_LOG_LEVEL}
+
+    runtime: nvidia

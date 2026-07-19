@@ -202,6 +202,31 @@ if [[ "$DO_VLLM" == true ]]; then
 
 fi
 
+    step "LiteLLM Deployment"
+
+    CONTAINER_NAME="${CONTAINER_NAME:-atlas-nexus-litellm}"
+
+    if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+        ok "LiteLLM container '${CONTAINER_NAME}' is already running."
+    else
+        if [[ "$SKIP_VLLM_START" == true ]]; then
+            info "Skipping LiteLLM start (--skip-vllm)."
+        else
+            info "Starting LiteLLM..."
+            make -C "${ROOT_DIR}" litellm-up
+            ok "LiteLLM container started."
+        fi
+    fi
+
+    step "LiteLLM Health Check"
+
+    if "${SCRIPT_DIR}/litellm-health.sh"; then
+        ok "LiteLLM is healthy."
+    else
+        warn "LiteLLM is not yet healthy — it may still be loading the model."
+        warn "Run 'make litellm-health' later to check again."
+    fi
+
 ###############################################################################
 # 4. Access (Cloudflare Tunnel)
 ###############################################################################

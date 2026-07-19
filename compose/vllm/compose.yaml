@@ -8,12 +8,10 @@ services:
     container_name: ${CONTAINER_NAME}
 
     restart: unless-stopped
-
     ports:
       - "${PORT}:8000"
-
     env_file:
-      - .env
+      - ../../configs/vllm.env
 
     volumes:
       - ../../storage/models:/models

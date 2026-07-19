@@ -99,6 +99,26 @@ vllm-pull:
 vllm-health:
 	./scripts/vllm-health.sh
 
+litellm-up:
+	@echo "Starting LiteLLM..."
+	./scripts/litellm-up.sh
+
+litellm-down:
+	@echo "Stopping LiteLLM..."
+	./scripts/litellm-down.sh
+
+litellm-health:
+	@echo "Checking LiteLLM health..."
+	./scripts/litellm-health.sh
+
+litellm-logs:
+	@echo "Tailing LiteLLM logs..."
+	./scripts/litellm-logs.sh
+
+litellm-restart:
+	@echo "Restarting LiteLLM..."
+	./scripts/litellm-restart.sh
+
 
 bootstrap:
 	./scripts/bootstrap.sh
