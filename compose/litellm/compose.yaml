@@ -24,7 +24,5 @@ services:
       - ${HOST}
       - --port
       - "4000"
-      - --log-level
-      - ${LITELLM_LOG_LEVEL}
 
     runtime: nvidia
