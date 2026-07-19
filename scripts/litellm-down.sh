@@ -48,7 +48,7 @@ step "Container Status"
  
 if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
     info "Stopping LiteLLM..."
-    make -C "${ROOT_DIR}" litellm-down
+    docker compose -f compose/litellm/compose.yaml down
     ok "LiteLLM container stopped."
 else
     ok "LiteLLM container is already stopped."

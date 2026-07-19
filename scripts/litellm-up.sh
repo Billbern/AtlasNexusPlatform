@@ -52,7 +52,7 @@ if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
     ok "LiteLLM container '${CONTAINER_NAME}' is already running."
 else
     info "Starting LiteLLM..."
-    make -C "${ROOT_DIR}" litellm-up
+    docker compose -f compose/litellm/compose.yaml up -d
     ok "LiteLLM container started."
 fi
  
