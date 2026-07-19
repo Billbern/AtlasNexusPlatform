@@ -12,7 +12,7 @@ model_list:
       api_key: "sk-no-key-required"
 
 litellm_settings:
-  callbacks: ["websearch_interception"]
+  callbacks: ["websearch_interception", "plugins.prompt_architect.PromptArchitectPlugin"]
   drop_params: true
   set_verbose: false
 

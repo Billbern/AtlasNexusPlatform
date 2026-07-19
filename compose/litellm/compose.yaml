@@ -12,6 +12,7 @@ services:
     volumes:
       - ../../storage/litellm:/storage
       - ../../storage/litellm/config/config.yaml:/app/config.yaml
+      - ../../storage/litellm/plugins:/app/plugins
 
     environment:
       LITELLM_MODEL: ${LITELLM_MODEL}
