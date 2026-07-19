@@ -22,7 +22,7 @@ services:
       HUGGING_FACE_HUB_TOKEN: ${HF_TOKEN}
 
     command:
-      - --model
+      
       - ${MODEL}
       - --host
       - ${HOST}
@@ -37,10 +37,7 @@ services:
       - --trust-remote-code
       - --enable-auto-tool-choice
       - --tool-call-parser
-      - qwen3_xml
-      - --enable-reasoning
-      - --reasoning-parser
-      - qwen3
+      - qwen25
 
     runtime: nvidia
 
