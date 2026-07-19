@@ -2,7 +2,7 @@
 
 PROJECT := Atlas Nexus
 
-
+VLLM_ENV := configs/vllm.env
 VLLM_COMPOSE := compose/vllm/compose.yaml
 
 
@@ -87,22 +87,22 @@ storage-init:
 
 
 vllm-up:
-	docker compose -f $(VLLM_COMPOSE) up -d
+	docker compose --env-file $(VLLM_ENV) -f $(VLLM_COMPOSE) up -d
 
 vllm-down:
-	docker compose -f $(VLLM_COMPOSE) down
+	docker compose --env-file $(VLLM_ENV) -f $(VLLM_COMPOSE) down
 
 vllm-restart:
-	docker compose -f $(VLLM_COMPOSE) restart
+	docker compose --env-file $(VLLM_ENV) -f $(VLLM_COMPOSE) restart
 
 vllm-logs:
-	docker compose -f $(VLLM_COMPOSE) logs -f
+	docker compose --env-file $(VLLM_ENV) -f $(VLLM_COMPOSE) logs -f
 
 vllm-ps:
-	docker compose -f $(VLLM_COMPOSE) ps
+	docker compose --env-file $(VLLM_ENV) -f $(VLLM_COMPOSE) ps
 
 vllm-pull:
-	docker compose -f $(VLLM_COMPOSE) pull
+	docker compose --env-file $(VLLM_ENV) -f $(VLLM_COMPOSE) pull
 
 vllm-health:
 	./scripts/vllm-health.sh
