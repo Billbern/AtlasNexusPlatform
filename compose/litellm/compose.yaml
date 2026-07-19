@@ -10,7 +10,7 @@ services:
       - "${PORT}:4000"
 
     env_file:
-      - ../../configs/litellm.env
+      - .env
 
     volumes:
       - ../../storage/litellm:/storage
