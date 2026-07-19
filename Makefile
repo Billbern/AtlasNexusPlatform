@@ -5,6 +5,9 @@ PROJECT := Atlas Nexus
 VLLM_ENV := configs/vllm.env
 VLLM_COMPOSE := compose/vllm/compose.yaml
 
+LITELLM_ENV := configs/litellm.env
+LITELLM_COMPOSE := compose/litellm/compose.yaml
+
 
 .PHONY: \
 help \
@@ -22,7 +25,12 @@ vllm-pull \
 vllm-health \
 access-install \
 access-up \
-access-down
+access-down \
+litellm-up \
+litellm-down \
+litellm-restart \
+litellm-logs \
+litellm-health
 
 
 help:
@@ -108,24 +116,19 @@ vllm-health:
 	./scripts/vllm-health.sh
 
 litellm-up:
-	@echo "Starting LiteLLM..."
-	./scripts/litellm-up.sh
+	docker compose --env-file $(LITELLM_ENV) -f $(LITELLM_COMPOSE) up -d
 
 litellm-down:
-	@echo "Stopping LiteLLM..."
-	./scripts/litellm-down.sh
-
-litellm-health:
-	@echo "Checking LiteLLM health..."
-	./scripts/litellm-health.sh
-
-litellm-logs:
-	@echo "Tailing LiteLLM logs..."
-	./scripts/litellm-logs.sh
+	docker compose --env-file $(LITELLM_ENV) -f $(LITELLM_COMPOSE) down
 
 litellm-restart:
-	@echo "Restarting LiteLLM..."
-	./scripts/litellm-restart.sh
+	docker compose --env-file $(LITELLM_ENV) -f $(LITELLM_COMPOSE) restart
+
+litellm-logs:
+	docker compose --env-file $(LITELLM_ENV) -f $(LITELLM_COMPOSE) logs -f
+
+litellm-health:
+	./scripts/litellm-health.sh
 
 
 bootstrap:

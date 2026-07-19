@@ -9,12 +9,8 @@ services:
     ports:
       - "${PORT}:4000"
 
-    env_file:
-      - .env
-
     volumes:
       - ../../storage/litellm:/storage
-      - ../../configs/litellm.env:/litellm.env
 
     environment:
       LITELLM_MODEL: ${LITELLM_MODEL}
