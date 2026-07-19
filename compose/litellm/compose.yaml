@@ -26,3 +26,8 @@ services:
       - "4000"
 
     runtime: nvidia
+
+networks:
+  default:
+    external:
+      name: ${ATLAS_NEXUS_NETWORK}

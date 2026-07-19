@@ -37,3 +37,8 @@ services:
       - --trust-remote-code
 
     runtime: nvidia
+
+networks:
+  default:
+    external:
+      name: ${ATLAS_NEXUS_NETWORK}

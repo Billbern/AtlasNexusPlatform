@@ -2,6 +2,8 @@
 
 PROJECT := Atlas Nexus
 
+ATLAS_NEXUS_NETWORK := atlas-nexus-net
+
 VLLM_ENV := configs/vllm.env
 VLLM_COMPOSE := compose/vllm/compose.yaml
 
@@ -93,6 +95,14 @@ host-update:
 storage-init:
 	./scripts/storage-init.sh
 
+network-init:
+	docker network create --driver bridge $(ATLAS_NEXUS_NETWORK)
+
+network-check:
+	docker network inspect $(ATLAS_NEXUS_NETWORK) >/dev/null 2>&1 || network-init
+
+network-clean:
+	docker network rm $(ATLAS_NEXUS_NETWORK)
 
 vllm-up:
 	docker compose --env-file $(VLLM_ENV) -f $(VLLM_COMPOSE) up -d
