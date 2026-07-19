@@ -37,7 +37,7 @@ services:
       - --trust-remote-code
       - --enable-auto-tool-choice
       - --tool-call-parser
-      - qwen25
+      - qwen3_xml
 
     runtime: nvidia
 
