@@ -1,0 +1,14 @@
+model_list:
+  - model_name: Qwen/Qwen3-8B
+    litellm_params:
+      model: hosted_vllm/Qwen/Qwen3-8B
+      api_base: "http://vllm:8000/v1"
+      api_key: "sk-no-key-required"
+
+litellm_settings:
+  callbacks: ["websearch_interception"]
+
+websearch_interception_params:
+  search_tools:
+    - search_tool_name: web-scraper
+      search_provider: duckduckgo 

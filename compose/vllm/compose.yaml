@@ -35,6 +35,12 @@ services:
       - --max-model-len
       - ${MAX_MODEL_LEN}
       - --trust-remote-code
+      - --enable-auto-tool-choice
+      - --tool-call-parser
+      - qwen3_xml
+      - --enable-reasoning
+      - --reasoning-parser
+      - qwen3
 
     runtime: nvidia
 

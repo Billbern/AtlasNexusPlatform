@@ -11,6 +11,7 @@ services:
 
     volumes:
       - ../../storage/litellm:/storage
+      - ../../storage/litellm/config/config.yaml:/app/config.yaml
 
     environment:
       LITELLM_MODEL: ${LITELLM_MODEL}
@@ -18,14 +19,8 @@ services:
       LITELLM_LOG_LEVEL: ${LITELLM_LOG_LEVEL}
 
     command:
-      - --model
-      - ${LITELLM_MODEL}
-      - --api_base
-      - ${LITELLM_VLLM_BASE_URL}
-      - --host
-      - ${HOST}
-      - --port
-      - "4000"
+      - --config
+      - /app/config.yaml
 
     runtime: nvidia
 
