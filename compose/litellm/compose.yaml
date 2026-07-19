@@ -20,6 +20,8 @@ services:
     command:
       - --model
       - ${LITELLM_MODEL}
+      - --api_base
+      - ${LITELLM_VLLM_BASE_URL}
       - --host
       - ${HOST}
       - --port
