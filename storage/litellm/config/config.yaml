@@ -1,12 +1,20 @@
 model_list:
-  - model_name: Qwen/Qwen3-8B
+  - model_name: qwen3_engine
     litellm_params:
       model: hosted_vllm/Qwen/Qwen3-8B
       api_base: "http://vllm:8000/v1"
       api_key: "sk-no-key-required"
 
+  - model_name: deepseek-architect
+    litellm_params:
+      model: hosted_vllm/deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+      api_base: "http://vllm-refiner:8001/v1"
+      api_key: "sk-no-key-required"
+
 litellm_settings:
   callbacks: ["websearch_interception"]
+  drop_params: true
+  set_verbose: false
 
 websearch_interception_params:
   search_tools:

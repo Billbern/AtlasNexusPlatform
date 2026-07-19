@@ -7,6 +7,9 @@ ATLAS_NEXUS_NETWORK := atlas-nexus-net
 VLLM_ENV := configs/vllm.env
 VLLM_COMPOSE := compose/vllm/compose.yaml
 
+VLLM_REFINER_ENV := configs/vllm-refiner.env
+VLLM_REFINER_COMPOSE := compose/vllm-refiner/compose.yaml
+
 LITELLM_ENV := configs/litellm.env
 LITELLM_COMPOSE := compose/litellm/compose.yaml
 
@@ -60,6 +63,12 @@ help:
 	@echo "  make vllm-ps          Show container status"
 	@echo "  make vllm-pull        Pull latest image"
 	@echo "  make vllm-health      Check vLLM health status"
+	@echo ""
+	@echo "vLLM Refiner"
+	@echo "------------------------------------------------------"
+	@echo "  make vllm-refiner-up     Start vLLM Refiner"
+	@echo "  make vllm-refiner-down   Stop vLLM Refiner"
+	@echo "  make vllm-refiner-logs   Follow vLLM Refiner logs"
 	@echo ""
 	@echo "LiteLLM"
 	@echo "------------------------------------------------------"
@@ -124,6 +133,15 @@ vllm-pull:
 
 vllm-health:
 	./scripts/vllm-health.sh
+
+vllm-refiner-up:
+	docker compose --env-file $(VLLM_REFINER_ENV) -f $(VLLM_REFINER_COMPOSE) up -d
+
+vllm-refiner-down:
+	docker compose --env-file $(VLLM_REFINER_ENV) -f $(VLLM_REFINER_COMPOSE) down
+
+vllm-refiner-logs:
+	docker compose --env-file $(VLLM_REFINER_ENV) -f $(VLLM_REFINER_COMPOSE) logs -f
 
 litellm-up:
 	docker compose --env-file $(LITELLM_ENV) -f $(LITELLM_COMPOSE) up -d
