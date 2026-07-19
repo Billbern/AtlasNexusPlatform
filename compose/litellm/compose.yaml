@@ -31,5 +31,5 @@ services:
 
 networks:
   default:
-    external:
-      name: ${ATLAS_NEXUS_NETWORK}
+    external: true
+    name: ${ATLAS_NEXUS_NETWORK}
