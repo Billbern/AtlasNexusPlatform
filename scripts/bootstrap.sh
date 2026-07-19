@@ -32,6 +32,7 @@ step()  { echo; echo -e "${BLUE}━━━ $1 ━━━${NC}"; }
 
 DO_HOST=true
 DO_STORAGE=true
+DO_NETWORK=true
 DO_VLLM=true
 DO_ACCESS=true
 SKIP_CHECK=false
@@ -170,7 +171,25 @@ if [[ "$DO_STORAGE" == true ]]; then
 fi
 
 ###############################################################################
-# 3. vLLM
+# 3. Default Docker Network
+###############################################################################
+if [[ "$DO_NETWORK" == true ]]; then
+
+    step "Docker Network Initialization"
+    ATLAS_NEXUS_NETWORK="${ATLAS_NEXUS_NETWORK:-atlas-nexus-net}"
+
+    if docker network inspect $(ATLAS_NEXUS_NETWORK) >/dev/null 2>&1; then
+        ok "Docker network '$(ATLAS_NEXUS_NETWORK)' already exists."
+    else
+        make network-init
+        ok "Docker network '$(ATLAS_NEXUS_NETWORK)' created."
+    fi
+
+fi
+
+
+###############################################################################
+# 4. vLLM
 ###############################################################################
 
 if [[ "$DO_VLLM" == true ]]; then
@@ -228,7 +247,7 @@ fi
     fi
 
 ###############################################################################
-# 4. Access (Cloudflare Tunnel)
+# 5. Access (Cloudflare Tunnel)
 ###############################################################################
 
 if [[ "$DO_ACCESS" == true ]]; then
@@ -268,6 +287,7 @@ echo
 
 if [[ "$DO_VLLM" == true ]]; then
     echo "  Local API  : http://localhost:8000/v1"
+    echo "  Litellm API   : http://localhost:4000/v1"
 fi
 
 if [[ "$DO_ACCESS" == true ]] && [[ -f "${ROOT_DIR}/runtime/cloudflared.url" ]]; then
@@ -280,6 +300,8 @@ echo
 echo "  Commands:"
 echo "    make vllm-health     Check vLLM status"
 echo "    make vllm-logs       Follow vLLM logs"
+echo "    make litellm-health  Check LiteLLM status"
+echo "    make litellm-logs    Follow LiteLLM logs"
 echo "    make access-down     Stop Cloudflare tunnel"
 echo "    make vllm-down       Stop vLLM"
 echo
