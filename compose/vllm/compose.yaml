@@ -11,7 +11,7 @@ services:
     ports:
       - "${PORT}:8000"
     env_file:
-      - vllm.env
+      - ../../configs/vllm.env
 
     volumes:
       - ../../storage/models:/models
