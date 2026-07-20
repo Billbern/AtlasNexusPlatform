@@ -33,6 +33,12 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
+# Attempt to run without sudo by checking if user is in docker group
+if ! groups | grep -q '\bdocker\b'; then
+    echo "Adding user to docker group..."
+    usermod -aG docker $USER
+fi
+
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 BLUE='\033[0;34m'
