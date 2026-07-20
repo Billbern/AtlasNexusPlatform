@@ -59,3 +59,6 @@ class PromptArchitectPlugin(CustomLogger):
                 print(f"[Architect Plugin Error] Failed to ping Refiner: {str(e)}")
             
         return data
+
+
+proxy_handler_instance = PromptArchitectPlugin()
