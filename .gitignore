@@ -5,3 +5,4 @@ compose/vllm/.env
 
 # Runtime files (PIDs, URLs, logs)
 runtime/
+__pycache__/
